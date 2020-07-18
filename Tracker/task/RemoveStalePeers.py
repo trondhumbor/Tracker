@@ -8,7 +8,7 @@ def removeStalePeers():
     with app.app_context():
         app.logger.info("Background task: removing stale peers")
         for peer in Peer.query.all():
-            delta = datetime.datetime.now() - peer.lastSeen
+            delta = (datetime.datetime.now() - peer.lastSeen).total_seconds()
             if delta > 3*app.config["TRACKER_ANNOUNCE_INTERVAL"]:
                 db.session.delete(peer)
         db.session.commit()
