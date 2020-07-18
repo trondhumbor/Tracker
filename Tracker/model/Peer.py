@@ -31,4 +31,3 @@ class Peer(db.Model):
             "left": self.left,
             "event": self.event
         })
-

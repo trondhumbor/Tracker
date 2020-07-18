@@ -62,7 +62,7 @@ def announce():
 
     for peer in torr.peers:
         dct["peers"].append({
-            "id": peer.peerId,
+            "peer id": peer.peerId,
             "ip": peer.ip,
             "port": peer.port
         })
