@@ -45,7 +45,7 @@ def announce():
         db.session.commit()
     else:
         # Peer found
-        peer.lastSeen = datetime.datetime.now()
+        peer.lastSeen = datetime.datetime.utcnow()
         peer.uploaded = uploaded
         peer.downloaded = downloaded
         peer.left = left
