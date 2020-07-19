@@ -28,10 +28,6 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
-    db.init_app(app)
-    scheduler.init_app(app)
-    scheduler.start()
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile("config.py", silent=True)
@@ -42,6 +38,10 @@ def create_app(test_config=None):
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["TRACKER_TORRENT_FOLDER"], exist_ok=True)
+
+    db.init_app(app)
+    scheduler.init_app(app)
+    scheduler.start()
 
     with app.app_context():
         from . import routes
