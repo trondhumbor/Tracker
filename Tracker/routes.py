@@ -1,4 +1,5 @@
 import datetime
+from ipaddress import ip_address
 
 from flask import request, make_response
 from flask import current_app as app
@@ -26,10 +27,10 @@ def announce():
 
     peerId = args.get("peer_id")
     ip = args.get("ip", request.remote_addr)
-    port = args.get("port")
-    uploaded = args.get("uploaded")
-    downloaded = args.get("downloaded")
-    left = args.get("left")
+    port = args.get("port", type=int)
+    uploaded = args.get("uploaded", type=int)
+    downloaded = args.get("downloaded", type=int)
+    left = args.get("left", type=int)
     event = args.get("event")
 
     peer = Peer.query.filter_by(peerId=peerId, ip=ip, port=port).first()
@@ -57,15 +58,18 @@ def announce():
         "interval": app.config["TRACKER_ANNOUNCE_INTERVAL"],
         "complete": sum((1 if p.left == 0 else 0) for p in torr.peers),
         "incomplete": sum((1 if p.left != 0 else 0) for p in torr.peers),
-        "peers": []
+        "peers": b"".join(ip_address(p.ip).packed + p.port.to_bytes(2, "big") for p in torr.peers)
     }
 
-    for peer in torr.peers:
-        dct["peers"].append({
-            "peer id": peer.peerId,
-            "ip": peer.ip,
-            "port": peer.port
-        })
+    fullResponse = args.get("compact", 1, type=int) == 0
+    if fullResponse:
+        dct["peers"] = [
+            {
+                "peer id": peer.peerId,
+                "ip": peer.ip,
+                "port": peer.port
+            } for peer in torr.peers
+        ]
 
     response = make_response(bencode.bencode(dct).decode("utf-8"), 200)
     response.mimetype = "text/plain"
