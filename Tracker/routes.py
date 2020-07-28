@@ -13,7 +13,7 @@ def announce():
 
     requiredKeys = ("info_hash", "peer_id", "port", "uploaded", "downloaded", "left")
     if not all(k in args for k in requiredKeys):
-        txt = bencode.bencode({"failure reason": "Not enough query parameters provided"}).decode("utf-8")
+        txt = bencode.bencode({"failure reason": "Not enough query parameters provided"})
         response = make_response(txt, 400)
         response.mimetype = "text/plain"
         return response
@@ -21,7 +21,7 @@ def announce():
     infoHash = args.get("info_hash")
     torr = Torrent.query.filter_by(infoHash=infoHash).first()
     if torr is None:
-        response = make_response(bencode.bencode({"failure reason": "No such torrent"}).decode("utf-8"), 404)
+        response = make_response(bencode.bencode({"failure reason": "No such torrent"}), 404)
         response.mimetype = "text/plain"
         return response
 
@@ -71,7 +71,7 @@ def announce():
             } for peer in torr.peers
         ]
 
-    response = make_response(bencode.bencode(dct).decode("utf-8"), 200)
+    response = make_response(bencode.bencode(dct), 200)
     response.mimetype = "text/plain"
     return response
 
@@ -79,7 +79,7 @@ def announce():
 def scrape():
     args = request.args
     if not "info_hash" in args:
-        txt = bencode.bencode({"failure reason": "Not enough query parameters provided"}).decode("utf-8")
+        txt = bencode.bencode({"failure reason": "Not enough query parameters provided"})
         response = make_response(txt, 400)
         response.mimetype = "text/plain"
         return response
@@ -101,6 +101,6 @@ def scrape():
             "incomplete": sum((1 if p.left != 0 else 0) for p in torr.peers)
         }
 
-    response = make_response(bencode.bencode(dct).decode("utf-8"), 200)
+    response = make_response(bencode.bencode(dct), 200)
     response.mimetype = "text/plain"
     return response
