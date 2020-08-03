@@ -7,8 +7,9 @@ def removeStalePeers():
     app = scheduler.app
     with app.app_context():
         app.logger.info("Background task: removing stale peers")
+        longestAcceptableAbsence = 3 * app.config["TRACKER_ANNOUNCE_INTERVAL"]
         for peer in Peer.query.all():
             delta = (datetime.datetime.utcnow() - peer.lastSeen).total_seconds()
-            if delta > 3*app.config["TRACKER_ANNOUNCE_INTERVAL"]:
+            if delta > longestAcceptableAbsence:
                 db.session.delete(peer)
         db.session.commit()

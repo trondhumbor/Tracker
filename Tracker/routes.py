@@ -97,7 +97,7 @@ def scrape():
 
         dct["files"][torr.infoHash] = {
             "complete": sum((1 if p.left == 0 else 0) for p in torr.peers),
-            "downloaded": sum((1 if p.event == "complete" else 0) for p in torr.peers),
+            "downloaded": sum((1 if p.event == "completed" else 0) for p in torr.peers),
             "incomplete": sum((1 if p.left != 0 else 0) for p in torr.peers)
         }
 
